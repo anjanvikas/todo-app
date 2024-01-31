@@ -11,8 +11,15 @@ const mongoose = require('mongoose');
 
 //
 
-mongoose.connect("mongodb+srv://anjanvikas2001:jFBEg8MvbXTo00Qw@cluster0.w4gc9yr.mongodb.net/todo-app");
-const todoSchema = mongoose.Schema({
+mongoose.connect("mongodb+srv://anjanvikas2001:jFBEg8MvbXTo00Qw@cluster0.w4gc9yr.mongodb.net/todo-app")
+.then(() => {
+    console.log('Connected to MongoDB');
+})
+.catch((err) =>{
+    console.error('Error connecting to MongoDB', error);
+});
+
+const todoSchema = new mongoose.Schema({ 
     title : String,
     description : String,
     completed : Boolean,
@@ -21,6 +28,6 @@ const todoSchema = mongoose.Schema({
 // connect to db
 //sync
 
-const todo = mongoose.model('todos',todoSchema);
+const Todo = mongoose.model('todos',todoSchema);
 
-module.exports = {todo};
+module.exports = {Todo};

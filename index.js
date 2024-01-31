@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const { todoItemSchema, updateItemSchema } = require('./types');
+const {Todo} = require('./db');
 
 // Initialize Express app
 const app = express();
@@ -18,6 +19,16 @@ app.use(express.json());
 app.get('/api/todos', async (req, res) => {
 
 // fetch all the todos
+try {
+    const todos = await Todo.find({});
+    res.status(200).json({
+        message : todos
+    });
+} catch (error) {
+  res.status(500).json({message : "Internal server error!"});
+}
+
+
 });
 
 // Add new todo
@@ -34,13 +45,29 @@ app.post('/api/todo', async (req, res) => {
     }
 
     // put the todo in db
+    try{
+        await Todo.create({
+            title : createPayload.title,
+            description : createPayload.description,
+            completed : false
+        });
+        res.status(200).json({
+            msg : "Todo added"
+        });
+    } catch(err){
+        res.status(500).json({
+            msg : err
+        });
+    }
+
+    
 });
 
 // mark as completed
 app.put('/completed/{id}', async (req, res) =>{
 
-    const createPayload = req.body;
-    const parsedPayload = updateItemSchema.safeParse(createPayload);
+    const updatePayload = req.body;
+    const parsedPayload = updateItemSchema.safeParse(updatePayload);
     if(!parsedPayload.success){
         res.status(411).json({
             msg : "You sent the wrong inputs",
@@ -48,7 +75,19 @@ app.put('/completed/{id}', async (req, res) =>{
         return ;
     }
 
-    // fetch the todo and update the id.
+ // update the todo
+ try {
+   await Todo.update({
+    _id : req.body.id
+   },{
+    completed : true
+   })
+   res.status(200).json({
+    message : "Updated"
+   })
+ } catch (error) {
+   res.status(500).json({message : "Internal server error!"});
+ }
 
 });
 
