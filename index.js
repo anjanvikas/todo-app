@@ -64,7 +64,7 @@ app.post('/api/todo', async (req, res) => {
 });
 
 // mark as completed
-app.put('/completed/{id}', async (req, res) =>{
+app.put('/completed', async (req, res) =>{
 
     const updatePayload = req.body;
     const parsedPayload = updateItemSchema.safeParse(updatePayload);
@@ -77,7 +77,8 @@ app.put('/completed/{id}', async (req, res) =>{
 
  // update the todo
  try {
-   await Todo.update({
+    console.log(req.body.id);
+   await Todo.updateOne({
     _id : req.body.id
    },{
     completed : true
@@ -86,13 +87,13 @@ app.put('/completed/{id}', async (req, res) =>{
     message : "Updated"
    })
  } catch (error) {
-   res.status(500).json({message : "Internal server error!"});
+   res.status(500).json({Message: "Internal server error! "+ error});
  }
 
 });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:PORT`);
+  console.log(`Server is running on http://localhost:{PORT}`);
 });
